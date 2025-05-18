@@ -1,35 +1,24 @@
 # Joshua Ean
 import streamlit as st
-
-try:
-    from Crypto.Cipher import AES
-    from Crypto.Random import get_random_bytes
-    from Crypto.PublicKey import RSA
-    from Crypto.Cipher import PKCS1_OAEP
-    from Crypto.Random.random import getrandbits
-except ImportError:
-    st.error("PyCryptodome is not installed. Please install it with 'pip install pycryptodome'.")
-
-try:
-    from cryptography.fernet import Fernet
-    from cryptography.hazmat.primitives.asymmetric import ec
-    from cryptography.hazmat.primitives import serialization, hashes
-    from cryptography.hazmat.primitives.asymmetric import padding as asy_padding
-except ImportError:
-    st.error("cryptography is not installed. Please install it with 'pip install cryptography'.")
-
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding as asy_padding
 import hashlib
 import base64
 import io
+from Crypto.Random.random import getrandbits
 
-st.set_page_config(page_title="Applied Cryptography Application", layout="wide")
 st.title("Applied Cryptography Application")
 
 menu = [
     "Symmetric Encryption/Decryption",
     "Asymmetric Encryption/Decryption",
-    "Hashing",
-    "Algorithm Information"
+    "Hashing Functions",
+    "Algorithm Informations"
 ]
 choice = st.sidebar.selectbox("Navigation", menu)
 
@@ -571,7 +560,7 @@ elif choice == "Asymmetric Encryption/Decryption":
             else:
                 st.error("Shared secrets do not match!")
 
-elif choice == "Hashing":
+elif choice == "Hashing Functions":
     st.header("Hashing")
     tab1, tab2 = st.tabs(["Text", "File"])
     with tab1:
@@ -588,12 +577,23 @@ elif choice == "Hashing":
         uploaded_file = st.file_uploader("Upload File for Hashing", type=None, key="hashfile")
         if uploaded_file and st.button("Hash File"):
             try:
+                # Preview file content (first 500 chars for safety)
+                file_bytes = uploaded_file.read()
+                preview_text = file_bytes[:500].decode(errors="ignore")
+                st.text_area("File Content Preview", preview_text, height=150, key="hash_file_preview")
+                uploaded_file.seek(0)
                 result = hash_file(uploaded_file, algo)
-                st.code(result)
+                # (do not delete) st.code(result)
+                st.download_button(
+                    "Download Result",
+                    data=result.encode(),
+                    file_name="hash_result.txt",
+                    key="hash_file_download"
+                )
             except Exception as e:
                 st.error(str(e))
 
-elif choice == "Algorithm Information":
+elif choice == "Algorithm Informations":
     st.header("Algorithm Information")
     st.subheader("Symmetric Algorithms")
     st.markdown("""
