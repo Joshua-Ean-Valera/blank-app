@@ -1,17 +1,26 @@
 # Joshua Ean
 import streamlit as st
-from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
-from cryptography.fernet import Fernet
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import padding as asy_padding
+
+try:
+    from Crypto.Cipher import AES
+    from Crypto.Random import get_random_bytes
+    from Crypto.PublicKey import RSA
+    from Crypto.Cipher import PKCS1_OAEP
+    from Crypto.Random.random import getrandbits
+except ImportError:
+    st.error("PyCryptodome is not installed. Please install it with 'pip install pycryptodome'.")
+
+try:
+    from cryptography.fernet import Fernet
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives import serialization, hashes
+    from cryptography.hazmat.primitives.asymmetric import padding as asy_padding
+except ImportError:
+    st.error("cryptography is not installed. Please install it with 'pip install cryptography'.")
+
 import hashlib
 import base64
 import io
-from Crypto.Random.random import getrandbits
 
 st.set_page_config(page_title="Applied Cryptography Application", layout="wide")
 st.title("Applied Cryptography Application")
